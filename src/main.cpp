@@ -1,0 +1,320 @@
+#include "main.h"
+#include "autoSelect/selection.h"
+#include "okapi/api.hpp"
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <future>
+using namespace okapi;
+
+/**
+ * Testing ground for Okapilib
+ *
+ * Mostly to see if it's best to use Okapilib for Odom and chassis setup or to make your own.
+ */
+
+auto chassis = ChassisControllerBuilder()
+				   .withMotors({10, -9, -18}, {11, 12, -20})
+				   /**
+					* ONLY COMMENT OUT BELOW IF NEEDED
+					*/
+				   //
+				   //    .withGains(
+				   // 	   {0.001, 0, 0.0001},		   // Distance controller gains
+				   // 	   {0.00127, 0.0055, 0.00025}, // Turn controller gains. Second is Gain, third is oscillation frequency, first... IDFK
+				   // 	   {0.001, 0, 0.0001}		   // Angle controller gains (helps drive straight)
+				   // 	   )
+				   .withDimensions({AbstractMotor::gearset::blue}, {{3.25_in, 15_in}, imev5BlueTPR})
+				   .withOdometry()
+				   .buildOdometry();
+
+Controller controller;
+pros::Motor frontIntake(8);
+pros::Motor backIntake(-7);
+
+pros::ADIDigitalOut pneumatics('b');
+
+void initialize()
+{
+	pros::lcd::initialize();
+	pros::lcd::set_text(1, "Drivetrain (Odom)");
+	selector::init();
+}
+
+long driveDistance(double distance)
+{
+	long double pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679;
+	long double mm_to_inches = (distance / 25.4);
+	long double inches_to_rotations = mm_to_inches / (3.25 * pi);
+	long double rotations_to_degrees = inches_to_rotations * 360;
+	return rotations_to_degrees;
+}
+
+/**
+ *
+ * Runs while the robot is in the disabled state of Field Management System or
+ * the VEX Competition Switch, following either autonomous or opcontrol. When
+ * the robot is enabled, this task will exit.
+ */
+void disabled() {}
+
+/**
+ * Runs after initialize(), and before autonomous when connected to the Field
+ * Management System or the VEX Competition Switch. This is intended for
+ * competition-specific initialization routines, such as an autonomous selector
+ * on the LCD.
+ *
+ * This task will exit when the robot is enabled and autonomous or opcontrol
+ * starts.
+ */
+void competition_initialize() {}
+
+/**
+ * Runs the user autonomous code. This function will be started in its own task
+ * with the default priority and stack size whenever the robot is enabled via
+ * the Field Management System or the VEX Competition Switch in the autonomous
+ * mode. Alternatively, this function may be called in initialize or opcontrol
+ * for non-competition testing purposes.
+ *
+ * If the robot is disabled or communications is lost, the autonomous task
+ * will be stopped. Re-enabling the robot will restart the task, not re-start it
+ * from where it left off.
+ */
+
+void autonomous()
+{
+	if (selector::auton == 1)
+	{
+		chassis->getOdometry()->setState({77_in,
+										  6_in,
+										  0_deg});
+		chassis->setMaxVelocity(150);
+		chassis->getModel()->setBrakeMode(AbstractMotor::brakeMode::coast);
+		pros::delay(500);
+		chassis->moveDistance(12_in);
+		frontIntake.move(-127 * 2);
+		chassis->driveToPoint({7_ft, 5_ft}); // +X is forward, +Y is right
+		// chassis->driveToPoint({4_ft, 1_ft}); // +X is forward, +Y is right
+		chassis->waitUntilSettled();
+		frontIntake.move(0);
+		chassis->driveToPoint({9.75_ft, 1.5_ft});
+		// chassis->driveToPoint({1_ft, 2.5_ft});
+		chassis->waitUntilSettled();
+		chassis->driveToPoint({9.85_ft, 3.5_ft}, true);
+		chassis->setMaxVelocity(600);
+		chassis->driveToPoint({9.85_ft, 4_ft}, true);
+		chassis->setMaxVelocity(150);
+		// chassis->setMaxVelocity(150);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		// frontIntake.move(0);
+		// backIntake.move(0);
+		// pneumatics.set_value(true);
+		// frontIntake.move(-127 * 2);
+		// chassis->setMaxVelocity(250);
+		// chassis->moveDistance(4_ft);
+		// chassis->moveDistance(-2_in);
+		// chassis->moveDistance(2_in);
+		// chassis->moveDistance(-2_in);
+		// chassis->moveDistance(2_in);
+		// chassis->moveDistance(-2_in);
+		// chassis->moveDistance(2_in);
+		// chassis->driveToPoint({9.875_ft, 3.5_ft}, true);
+		// chassis->setMaxVelocity(600);
+		// chassis->driveToPoint({9.875_ft, 4_ft}, true);
+		// backIntake.move(-127 * 2);
+	}
+	if (selector::auton == 2)
+	{
+	}
+	if (selector::auton == 3)
+	{
+		chassis->getOdometry()->setState({77_in,
+										  6_in,
+										  0_deg});
+		chassis->setMaxVelocity(150);
+		chassis->getModel()->setBrakeMode(AbstractMotor::brakeMode::coast);
+		pros::delay(500);
+		chassis->moveDistance(12_in);
+	}
+	if (selector::auton == -1)
+	{
+		/*Code auton for Near Blue */
+	}
+	if (selector::auton == -2)
+	{
+		/*Code auton for Far Blue */
+	}
+	if (selector::auton == -3)
+	{
+		/*Code auton for Blue Nothing (Leave Blank) */
+	}
+	if (selector::auton == 0)
+	{
+		/*Code Skills*/
+		chassis->getOdometry()->setState({77_in,
+										  6_in,
+										  0_deg});
+		chassis->setMaxVelocity(150);
+		chassis->getModel()->setBrakeMode(AbstractMotor::brakeMode::coast);
+		pros::delay(500);
+		chassis->moveDistance(12_in);
+		frontIntake.move(-127 * 2);
+		chassis->driveToPoint({7_ft, 5_ft}); // +X is forward, +Y is right
+		// chassis->driveToPoint({4_ft, 1_ft}); // +X is forward, +Y is right
+		chassis->waitUntilSettled();
+		frontIntake.move(0);
+		chassis->driveToPoint({9.75_ft, 1.5_ft});
+		// chassis->driveToPoint({1_ft, 2.5_ft});
+		chassis->waitUntilSettled();
+		chassis->driveToPoint({9.78_ft, 3.5_ft}, true);
+		chassis->setMaxVelocity(600);
+		chassis->driveToPoint({9.78_ft, 4_ft}, true);
+		chassis->setMaxVelocity(150);
+		// chassis->setMaxVelocity(150);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		pros::delay(3000);
+		frontIntake.move(0);
+		backIntake.move(0);
+		chassis->turnAngle(-5_deg);
+		pneumatics.set_value(true);
+		frontIntake.move(-127 * 2);
+		chassis->setMaxVelocity(250);
+		chassis->moveDistance(3.9_ft);
+		chassis->moveDistance(-2_in);
+		chassis->moveDistance(2_in);
+		chassis->moveDistance(-2_in);
+		chassis->moveDistance(2_in);
+		chassis->moveDistance(-2_in);
+		chassis->moveDistance(2_in);
+		chassis->moveDistance(-3.9_ft);
+		backIntake.move(-127 * 2);
+		pros::delay(2000);
+		backIntake.move(127 * 2);
+		backIntake.move(-127 * 2);
+		backIntake.move(127 * 2);
+		backIntake.move(-127 * 2);
+		backIntake.move(127 * 2);
+		backIntake.move(-127 * 2);
+	}
+}
+
+/**
+ * Runs the operator control code. This function will be started in its own task
+ * with the default priority and stack size whenever the robot is enabled via
+ * the Field Management System or the VEX Competition Switch in the operator
+ * control mode.
+ *
+ * If no competition control is connected, this function will run immediately
+ * following initialize().
+ *
+ * If the robot is disabled or communications is lost, the
+ * operator control task will be stopped. Re-enabling the robot will restart the
+ * task, not resume it from where it left off.
+ */
+
+bool buttonRegisterDown(ControllerDigital button)
+{
+	if (!controller.getDigital(button))
+	{
+		return false;
+	}
+	else
+	{
+		auto startTime = std::chrono::steady_clock::now();
+		auto endTime = startTime + std::chrono::milliseconds(1000);
+		while (std::chrono::steady_clock::now() < endTime)
+		{
+			if (!controller.getDigital(button))
+			{
+				return false;
+			}
+			else
+			{
+				continue;
+			}
+		}
+		return true;
+	}
+}
+
+bool toggleA = false;
+
+bool buttonRegisterA()
+{
+	if (!controller.getDigital(ControllerDigital::A))
+	{
+		return false;
+	}
+	else
+	{
+		if (buttonRegisterDown(ControllerDigital::A))
+		{
+			toggleA = !toggleA;
+			return true;
+		}
+	}
+}
+
+void opcontrol()
+{
+	pneumatics.set_value(false);
+	chassis->setMaxVelocity(600);
+	while (true)
+	{
+		chassis->setMaxVelocity(1200 * 40);
+		buttonRegisterA();
+		/* Code User Control*/
+		chassis->getModel()->arcade(controller.getAnalog(ControllerAnalog::leftY), controller.getAnalog(ControllerAnalog::rightX));
+
+		if (controller.getDigital(ControllerDigital::right) && !toggleA)
+		{
+			frontIntake.move(127);
+			backIntake.move(127);
+		}
+		else if (controller.getDigital(ControllerDigital::Y))
+		{
+			frontIntake.move(-127);
+			backIntake.move(-127);
+			toggleA = false;
+		}
+
+		if (toggleA && controller.getDigital(ControllerDigital::right))
+		{
+			frontIntake.move(127);
+			backIntake.move(127);
+			toggleA = false;
+		}
+		if (toggleA && controller.getDigital(ControllerDigital::L2))
+		{
+			toggleA = false;
+			frontIntake.move(-127);
+		}
+		else if (controller.getDigital(ControllerDigital::L2))
+		{
+			toggleA = false;
+			frontIntake.move(-127);
+		}
+		else if (toggleA)
+		{
+			frontIntake.move(-127);
+		}
+
+		if (controller.getDigital(ControllerDigital::R2))
+		{
+			pneumatics.set_value(true);
+		}
+		else if (controller.getDigital(ControllerDigital::R1))
+		{
+			pneumatics.set_value(false);
+		}
+
+		if (!controller.getDigital(ControllerDigital::right) && !controller.getDigital(ControllerDigital::Y) && !controller.getDigital(ControllerDigital::L2) && !toggleA)
+		{
+			frontIntake.move(0);
+			backIntake.move(0);
+		}
+		pros::delay(20);
+	}
+}
