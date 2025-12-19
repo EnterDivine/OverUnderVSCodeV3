@@ -15,24 +15,23 @@ using namespace okapi;
 
 auto chassis = ChassisControllerBuilder()
 				   .withMotors({10, -9, -18}, {11, 12, -20})
-				   /**
-					* ONLY COMMENT OUT BELOW IF NEEDED
-					*/
-				   //
-				   //    .withGains(
-				   // 	   {0.001, 0, 0.0001},		   // Distance controller gains
-				   // 	   {0.00127, 0.0055, 0.00025}, // Turn controller gains. Second is Gain, third is oscillation frequency, first... IDFK
-				   // 	   {0.001, 0, 0.0001}		   // Angle controller gains (helps drive straight)
-				   // 	   )
-				   .withDimensions({AbstractMotor::gearset::blue}, {{3.25_in, 15_in}, imev5BlueTPR})
+				   .withGains(
+					   {0.005, 0.03, 0.0005},  // Distance controller gains
+					   {0.012, 0.001, 0.0001}, // Turn controller gains
+					   {0.001, 0.001, 0.000}   // Angle controller gains (helps drive straight)
+					   )
+				   .withDimensions({AbstractMotor::gearset::blue, (36.0 / 64.0)}, {{3.25_in, 16_in}, imev5BlueTPR})
 				   .withOdometry()
 				   .buildOdometry();
 
 Controller controller;
+
 pros::Motor frontIntake(8);
 pros::Motor backIntake(-7);
 
 pros::ADIDigitalOut pneumatics('b');
+pros::ADIDigitalOut midgoal('d');
+pros::ADIDigitalOut wings('c');
 
 void initialize()
 {
@@ -88,44 +87,253 @@ void autonomous()
 		chassis->getOdometry()->setState({77_in,
 										  6_in,
 										  0_deg});
-		chassis->setMaxVelocity(150);
+
+		chassis->setMaxVelocity(125);
 		chassis->getModel()->setBrakeMode(AbstractMotor::brakeMode::coast);
-		pros::delay(500);
+		chassis->moveDistance(4.8_ft); // 2 ft
+		chassis->turnAngle(160_deg);   // 90 degrees
+
+		// pros::delay(400);
+		// chassis->moveDistance(12_in);
+		// frontIntake.move(-127 * 2);
+		// chassis->driveToPoint({7_ft, 5_ft}); // +X is forward, +Y is right
+		// // chassis->driveToPoint({4_ft, 1_ft}); // +X is forward, +Y is right
+		// chassis->waitUntilSettled();
+		// frontIntake.move(0);
+		// chassis->driveToPoint({9.30_ft, 1.5_ft});
+		// pros::delay(300);
+		// chassis->turnAngle(-40_deg);
+		// pneumatics.set_value(true);
+		// frontIntake.move(-127 * 2);
+		// pros::delay(400);
+		// chassis->setMaxVelocity(150);
+		// chassis->moveDistanceAsync(1.4_ft);
+		// pros::delay(1000);
+		// if (chassis->isSettled() != true)
+		// {
+		// 	chassis->stop();
+		// }
+		// chassis->setMaxVelocity(150);
+
+		// // chassis->driveToPoint({7.90_ft, -3.5_ft});
+
+		// // chassis->driveToPoint({1_ft, 2.5_ft});
+
+		// chassis->moveDistanceAsync(-7.5_ft);
+		// pros::delay(2000);
+		// if (chassis->isSettled() != true)
+		// {
+		// 	chassis->stop();
+		// }
+		// // chassis->driveToPoint({9.55_ft, 3.5_ft}, true);
+		// chassis->setMaxVelocity(600);
+		// // chassis->driveToPoint({9.79_ft, 4.5_ft}, true);
+		// chassis->setMaxVelocity(150);
+		// // chassis->setMaxVelocity(150);
+		// frontIntake.move(-127 * 2);
+		// backIntake.move(-127 * 2);
+		// pros::delay(1500);
+		// frontIntake.move(0);
+		// backIntake.move(0);
+		// frontIntake.move(-127 * 2);
+		// backIntake.move(-127 * 2);
+		// frontIntake.move(-127 * 2);
+		// backIntake.move(-127 * 2);
+		// frontIntake.move(-127 * 2);
+		// backIntake.move(-127 * 2);
+		// frontIntake.move(-127 * 2);
+		// backIntake.move(-127 * 2);
+		// frontIntake.move(-127 * 2);
+		// backIntake.move(-127 * 2);
+		// frontIntake.move(-127 * 2);
+		// backIntake.move(-127 * 2);
+		// frontIntake.move(-127 * 2);
+		// backIntake.move(-127 * 2);
+		// frontIntake.move(-127 * 2);
+		// backIntake.move(-127 * 2);
+		// frontIntake.move(-127 * 2);
+		// backIntake.move(-127 * 2);
+		// frontIntake.move(-127 * 2);
+		// backIntake.move(-127 * 2);
+		// pros::delay(1000);
+	}
+	if (selector::auton == 2)
+	{
+		chassis->getOdometry()->setState({77_in,
+										  6_in,
+										  0_deg});
+		chassis->setMaxVelocity(170);
+		chassis->getModel()->setBrakeMode(AbstractMotor::brakeMode::coast);
+		pros::delay(300);
 		chassis->moveDistance(12_in);
 		frontIntake.move(-127 * 2);
 		chassis->driveToPoint({7_ft, 5_ft}); // +X is forward, +Y is right
 		// chassis->driveToPoint({4_ft, 1_ft}); // +X is forward, +Y is right
 		chassis->waitUntilSettled();
 		frontIntake.move(0);
-		chassis->driveToPoint({9.75_ft, 1.5_ft});
+		chassis->driveToPoint({9.35_ft, 1.5_ft});
+		pros::delay(100);
+		chassis->turnAngle(-45_deg);
+		pneumatics.set_value(true);
+		frontIntake.move(-127 * 2);
+		pros::delay(400);
+		chassis->setMaxVelocity(200);
+		chassis->moveDistance(1.5_ft);
+		chassis->setMaxVelocity(150);
+
+		// chassis->driveToPoint({7.90_ft, -3.5_ft});
+		pros::delay(1000);
 		// chassis->driveToPoint({1_ft, 2.5_ft});
 		chassis->waitUntilSettled();
-		chassis->driveToPoint({9.85_ft, 3.5_ft}, true);
+		chassis->moveDistanceAsync(-7.5_ft);
+		pros::delay(2500);
+		if (chassis->isSettled() != true)
+		{
+			chassis->stop();
+		}
+		// chassis->driveToPoint({9.55_ft, 3.5_ft}, true);
 		chassis->setMaxVelocity(600);
-		chassis->driveToPoint({9.85_ft, 4_ft}, true);
+		// chassis->driveToPoint({9.79_ft, 4.5_ft}, true);
 		chassis->setMaxVelocity(150);
 		// chassis->setMaxVelocity(150);
 		frontIntake.move(-127 * 2);
 		backIntake.move(-127 * 2);
+		pros::delay(1500);
+		frontIntake.move(0);
+		backIntake.move(0);
+
+		// chassis->moveDistance(-2_in);
+		// chassis->moveDistance(2_in);
+		// chassis->moveDistance(-2_in);
+		// chassis->moveDistance(2_in);
+		// chassis->moveDistance(-2_in);
+		// chassis->moveDistance(2_in);
+		// chassis->turnAngle(5_deg);
+		// chassis->moveDistance(-3.5_ft);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		pros::delay(2000);
+		// PART 2
+		frontIntake.move(0);
+		backIntake.move(0);
+		chassis->setMaxVelocity(150);
+		chassis->getModel()->setBrakeMode(AbstractMotor::brakeMode::coast);
+		pros::delay(300);
+		chassis->moveDistance(1.5_ft);
+		chassis->turnAngle(-100_deg);
+		pros::delay(100);
+		// chassis->moveDistance(-2_ft);
+		chassis->moveDistanceAsync(-2_ft);
+		pros::delay(2000);
+		if (chassis->isSettled() != true)
+		{
+			chassis->stop();
+		}
+		chassis->getOdometry()->setState({158_in,
+										  36_in,
+										  180_deg});
+		chassis->driveToPoint({12_in, 36_in}); // chassis->moveDistance(12.5_ft);
+											   // chassis->turnAngle(100_deg);
+											   // // chassis->moveDistance(-1_ft);
+											   // chassis->moveDistanceAsync(-2.5_ft);
+											   // pros::delay(2000);
+											   // if (chassis->isSettled() != true)
+											   // {
+											   // 	chassis->stop();
+											   // }
+											   // pneumatics.set_value(true);
+											   // frontIntake.move(-127 * 2);
+
+		// chassis->moveDistance(4.00_ft);
+		// chassis->setMaxVelocity(350);
+		// pros::delay(100);
+		// chassis->moveDistance(0.4_ft);
+		// chassis->setMaxVelocity(150);
+		// pros::delay(2500);
 		// frontIntake.move(0);
 		// backIntake.move(0);
-		// pneumatics.set_value(true);
+		// // chassis->turnAngle(3.5_deg);
+		// // chassis->moveDistance(-3.3_ft);
+		// chassis->moveDistanceAsync(-3.5_ft);
+		// pros::delay(2000);
+		// if (chassis->isSettled() != true)
+		// {
+		// 	chassis->stop();
+		// }
+		// frontIntake.move(127 * 2);
+		// pros::delay(100);
 		// frontIntake.move(-127 * 2);
-		// chassis->setMaxVelocity(250);
-		// chassis->moveDistance(4_ft);
-		// chassis->moveDistance(-2_in);
-		// chassis->moveDistance(2_in);
-		// chassis->moveDistance(-2_in);
-		// chassis->moveDistance(2_in);
-		// chassis->moveDistance(-2_in);
-		// chassis->moveDistance(2_in);
-		// chassis->driveToPoint({9.875_ft, 3.5_ft}, true);
-		// chassis->setMaxVelocity(600);
-		// chassis->driveToPoint({9.875_ft, 4_ft}, true);
 		// backIntake.move(-127 * 2);
-	}
-	if (selector::auton == 2)
-	{
+		// pros::delay(2500);
+		// frontIntake.move(0);
+		// backIntake.move(0);
+		// chassis->moveDistance(1_ft);
+		// pneumatics.set_value(false);
+		// chassis->turnAngle(-125_deg);
+		// chassis->setMaxVelocity(350);
+		// chassis->moveDistance(-6_ft);
+		// pros::delay(300);
+		// chassis->turnAngle(-100_deg);
+		// chassis->moveDistance(-2_ft);
+		// pros::delay(20000);
+		// {
+
+		// 	// For SKILLS
+		// 	chassis->getOdometry()->setState({77_in,
+		// 									6_in,
+		// 									0_deg});
+		// 	chassis->setMaxVelocity(170);
+		// 	chassis->getModel()->setBrakeMode(AbstractMotor::brakeMode::coast);
+		// 	pros::delay(300);
+		// 	chassis->moveDistance(12_in);
+		// 	frontIntake.move(-127 * 2);
+		// 	chassis->driveToPoint({7_ft, 5_ft}); // +X is forward, +Y is right
+		// 	// chassis->driveToPoint({4_ft, 1_ft}); // +X is forward, +Y is right
+		// 	chassis->waitUntilSettled();
+		// 	frontIntake.move(0);
+		// 	chassis->driveToPoint({9.40_ft, 1.5_ft});
+		// 	pros::delay(100);
+		// 	chassis->turnAngle(-45_deg);
+		// 	pneumatics.set_value(true);
+		// 	frontIntake.move(-127 * 2);
+		// 	pros::delay(1000);
+		// 	chassis->setMaxVelocity(200);
+		// 	chassis->moveDistance(1.4_ft);
+		// 	chassis->setMaxVelocity(150);
+
+		// 	// chassis->driveToPoint({7.90_ft, -3.5_ft});
+		// 	pros::delay(100);
+		// 	// chassis->driveToPoint({1_ft, 2.5_ft});
+		// 	chassis->waitUntilSettled();
+		// 	chassis->driveToPoint({9.55_ft, 3.5_ft}, true);
+		// 	chassis->setMaxVelocity(600);
+		// 	// chassis->driveToPoint({9.79_ft, 4.5_ft}, true);
+		// 	chassis->setMaxVelocity(150);
+		// 	// chassis->setMaxVelocity(150);
+		// 	frontIntake.move(-127 * 2);
+		// 	backIntake.move(-127 * 2);
+		// 	pros::delay(1500);
+		// 	frontIntake.move(0);
+		// 	backIntake.move(0);
+		// }
 	}
 	if (selector::auton == 3)
 	{
@@ -140,6 +348,74 @@ void autonomous()
 	if (selector::auton == -1)
 	{
 		/*Code auton for Near Blue */
+		chassis->getOdometry()->setState({77_in,
+										  6_in,
+										  0_deg});
+		chassis->setMaxVelocity(170);
+		chassis->getModel()->setBrakeMode(AbstractMotor::brakeMode::coast);
+		pros::delay(400);
+		chassis->moveDistance(12_in);
+		frontIntake.move(-127 * 2);
+		chassis->driveToPoint({3_ft, 5_ft}); // +X is forward, +Y is right
+		// chassis->driveToPoint({4_ft, 1_ft}); // +X is forward, +Y is right
+		chassis->waitUntilSettled();
+		frontIntake.move(0);
+		chassis->driveToPoint({0.65_ft, 1.5_ft});
+		pros::delay(300);
+		chassis->turnAngle(45_deg);
+		pneumatics.set_value(true);
+		frontIntake.move(-127 * 2);
+		pros::delay(400);
+		chassis->setMaxVelocity(150);
+		chassis->moveDistanceAsync(1.4_ft);
+		pros::delay(1000);
+		if (chassis->isSettled() != true)
+		{
+			chassis->stop();
+		}
+		chassis->setMaxVelocity(150);
+
+		// chassis->driveToPoint({7.90_ft, -3.5_ft});
+
+		// chassis->driveToPoint({1_ft, 2.5_ft});
+
+		chassis->moveDistanceAsync(-7.5_ft);
+		pros::delay(2500);
+		if (chassis->isSettled() != true)
+		{
+			chassis->stop();
+		}
+		// chassis->driveToPoint({9.55_ft, 3.5_ft}, true);
+		chassis->setMaxVelocity(600);
+		// chassis->driveToPoint({9.79_ft, 4.5_ft}, true);
+		chassis->setMaxVelocity(150);
+		// chassis->setMaxVelocity(150);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		pros::delay(1500);
+		frontIntake.move(0);
+		backIntake.move(0);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		pros::delay(1000);
 	}
 	if (selector::auton == -2)
 	{
@@ -155,48 +431,75 @@ void autonomous()
 		chassis->getOdometry()->setState({77_in,
 										  6_in,
 										  0_deg});
-		chassis->setMaxVelocity(150);
+		chassis->setMaxVelocity(170);
 		chassis->getModel()->setBrakeMode(AbstractMotor::brakeMode::coast);
-		pros::delay(500);
+		pros::delay(300);
 		chassis->moveDistance(12_in);
 		frontIntake.move(-127 * 2);
 		chassis->driveToPoint({7_ft, 5_ft}); // +X is forward, +Y is right
 		// chassis->driveToPoint({4_ft, 1_ft}); // +X is forward, +Y is right
 		chassis->waitUntilSettled();
 		frontIntake.move(0);
-		chassis->driveToPoint({9.75_ft, 1.5_ft});
+		chassis->driveToPoint({9.40_ft, 1.5_ft});
+		pros::delay(100);
+		chassis->turnAngle(-45_deg);
+		pneumatics.set_value(true);
+		frontIntake.move(-127 * 2);
+		pros::delay(400);
+		chassis->setMaxVelocity(200);
+		chassis->moveDistance(1.4_ft);
+		chassis->setMaxVelocity(150);
+
+		// chassis->driveToPoint({7.90_ft, -3.5_ft});
+		pros::delay(100);
 		// chassis->driveToPoint({1_ft, 2.5_ft});
 		chassis->waitUntilSettled();
-		chassis->driveToPoint({9.78_ft, 3.5_ft}, true);
+		chassis->driveToPoint({9.55_ft, 3.5_ft}, true);
 		chassis->setMaxVelocity(600);
-		chassis->driveToPoint({9.78_ft, 4_ft}, true);
+		// chassis->driveToPoint({9.79_ft, 4.5_ft}, true);
 		chassis->setMaxVelocity(150);
 		// chassis->setMaxVelocity(150);
 		frontIntake.move(-127 * 2);
 		backIntake.move(-127 * 2);
-		pros::delay(3000);
+		pros::delay(1500);
 		frontIntake.move(0);
 		backIntake.move(0);
+
 		chassis->turnAngle(-5_deg);
 		pneumatics.set_value(true);
 		frontIntake.move(-127 * 2);
-		chassis->setMaxVelocity(250);
+		chassis->setMaxVelocity(275);
 		chassis->moveDistance(3.9_ft);
-		chassis->moveDistance(-2_in);
-		chassis->moveDistance(2_in);
-		chassis->moveDistance(-2_in);
-		chassis->moveDistance(2_in);
-		chassis->moveDistance(-2_in);
-		chassis->moveDistance(2_in);
-		chassis->moveDistance(-3.9_ft);
+		// chassis->moveDistance(-2_in);
+		// chassis->moveDistance(2_in);
+		// chassis->moveDistance(-2_in);
+		// chassis->moveDistance(2_in);
+		// chassis->moveDistance(-2_in);
+		// chassis->moveDistance(2_in);
+		chassis->turnAngle(5_deg);
+		chassis->moveDistance(-3.5_ft);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
+		backIntake.move(-127 * 2);
+		frontIntake.move(-127 * 2);
 		backIntake.move(-127 * 2);
 		pros::delay(2000);
-		backIntake.move(127 * 2);
-		backIntake.move(-127 * 2);
-		backIntake.move(127 * 2);
-		backIntake.move(-127 * 2);
-		backIntake.move(127 * 2);
-		backIntake.move(-127 * 2);
+		// chassis->moveDistance(0.5_ft);
 	}
 }
 
@@ -257,6 +560,42 @@ bool buttonRegisterA()
 	}
 }
 
+bool toggleLeft = false;
+
+bool buttonRegisterLeft()
+{
+	if (!controller.getDigital(ControllerDigital::left))
+	{
+		return false;
+	}
+	else
+	{
+		if (buttonRegisterDown(ControllerDigital::left))
+		{
+			toggleLeft = !toggleLeft;
+			return true;
+		}
+	}
+}
+
+bool toggleB = false;
+
+bool buttonRegisterB()
+{
+	if (!controller.getDigital(ControllerDigital::B))
+	{
+		return false;
+	}
+	else
+	{
+		if (buttonRegisterDown(ControllerDigital::B))
+		{
+			toggleB = !toggleB;
+			return true;
+		}
+	}
+}
+
 void opcontrol()
 {
 	pneumatics.set_value(false);
@@ -265,6 +604,8 @@ void opcontrol()
 	{
 		chassis->setMaxVelocity(1200 * 40);
 		buttonRegisterA();
+		buttonRegisterB();
+		buttonRegisterLeft();
 		/* Code User Control*/
 		chassis->getModel()->arcade(controller.getAnalog(ControllerAnalog::leftY), controller.getAnalog(ControllerAnalog::rightX));
 
@@ -314,6 +655,24 @@ void opcontrol()
 		{
 			frontIntake.move(0);
 			backIntake.move(0);
+		}
+
+		if (!toggleB)
+		{
+			wings.set_value(toggleB);
+		}
+		else if (toggleB)
+		{
+			wings.set_value(toggleB);
+		}
+
+		if (!toggleLeft)
+		{
+			midgoal.set_value(toggleLeft);
+		}
+		else if (toggleLeft)
+		{
+			midgoal.set_value(toggleLeft);
 		}
 		pros::delay(20);
 	}

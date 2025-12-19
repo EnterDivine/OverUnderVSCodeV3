@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "Match (Do Nothing)",
+    "project_name": "Match (Left)",
     "target": "v5",
     "templates": {
       "autoSelect": {
@@ -325,7 +325,7 @@
       }
     },
     "upload_options": {
-      "slot": 3,
+      "slot": 1,
       "icon": "X"
     }
   }
