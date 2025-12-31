@@ -29,11 +29,11 @@ using namespace okapi;
 auto chassis = ChassisControllerBuilder()
 				   .withMotors({10, -9, -18}, {11, 12, -20})
 				   .withGains(
-					   {0.005, 0.001, 0.00015}, // Distance controller gains
-					   {0.002, 0.01, 0.0002},	// Turn controller gains
+					   {0.002, 0.001, 0.00025}, // Distance controller gains
+					   {0.003, 0.001, 0.0001},	// Turn controller gains
 					   {0.001, 0.001, 0.000}	// Angle controller gains (helps drive straight)
 					   )
-				   .withDimensions({AbstractMotor::gearset::blue, (48.0 / 36.0)}, {{3.25_in, 11.5_in}, imev5BlueTPR})
+				   .withDimensions({AbstractMotor::gearset::blue, (48.0 / 36.0)}, {{3.25_in, 13_in}, imev5BlueTPR})
 				   .withOdometry()
 				   .buildOdometry();
 
@@ -121,10 +121,34 @@ void autonomous()
 		chassis->setMaxVelocity(300);
 		chassis->getModel()->setBrakeMode(AbstractMotor::brakeMode::coast);
 
-		chassis->moveDistance(2_ft);
-		chassis->turnAngle(360_deg); // 90 degrees
+		// chassis->moveDistance(2_ft);
+		// chassis->turnAngle(90_deg);
 		// chassis->waitUntilSettled();
-		chassis->moveDistance(-2_ft);
+		// chassis->turnAngle(-90_deg);
+		// chassis->moveDistance(-2_ft);
+
+		chassis->moveDistance(3_ft);
+		chassis->turnAngle(-90_deg);
+		pneumatics.set_value(true);
+		frontIntake.move(-127 * 2);
+		pros::delay(300);
+		chassis->setMaxVelocity(200);
+		chassis->moveDistanceAsync(1.5_ft);
+		pros::delay(1100);
+		if (chassis->isSettled() != true)
+		{
+			chassis->stop();
+		}
+
+		// pros::delay(500);
+
+		// chassis->setMaxVelocity(300);
+		// chassis->getModel()->setBrakeMode(AbstractMotor::brakeMode::coast);
+
+		// chassis->moveDistance(2_ft);
+		// chassis->turnAngle(360_deg); // 90 degrees
+		// chassis->waitUntilSettled();
+		// chassis->moveDistance(-2_ft);
 		// chassis->turnAngle(-90_deg); // 90 degrees
 		// chassis->moveDistance(-2_ft);
 
