@@ -29,7 +29,7 @@ using namespace okapi;
 auto chassis = ChassisControllerBuilder()
 				   .withMotors({10, -9, -18}, {11, 12, -20})
 				   .withGains(
-					   {0.002, 0.001, 0.00025}, // Distance controller gains
+					   {0.002, 0.001, 0.00005}, // Distance controller gains
 					   {0.003, 0.001, 0.0001},	// Turn controller gains
 					   {0.001, 0.001, 0.000}	// Angle controller gains (helps drive straight)
 					   )
@@ -95,15 +95,15 @@ void competition_initialize() {}
  * from where it left off.
  */
 
-QLength dilateDistance(QLength distance)
+void moveDistance(QLength distance)
 {
-
-	return (distance * (4.8 / 2.0));
+	chassis->moveDistance(distance);
+	chassis->waitUntilSettled();
 }
-
-QAngle dilateRotation(QAngle rotation)
+void turnAngle(QAngle angle)
 {
-	return (rotation * 1.8 * (160 / 90));
+	chassis->turnAngle(angle);
+	chassis->waitUntilSettled();
 }
 
 void autonomous()
@@ -127,18 +127,23 @@ void autonomous()
 		// chassis->turnAngle(-90_deg);
 		// chassis->moveDistance(-2_ft);
 
-		chassis->moveDistance(3_ft);
-		chassis->turnAngle(-90_deg);
-		pneumatics.set_value(true);
-		frontIntake.move(-127 * 2);
-		pros::delay(300);
-		chassis->setMaxVelocity(200);
-		chassis->moveDistanceAsync(1.5_ft);
-		pros::delay(1100);
-		if (chassis->isSettled() != true)
-		{
-			chassis->stop();
-		}
+		moveDistance(2_ft);
+		turnAngle(90_deg);
+		turnAngle(-90_deg);
+		moveDistance(-2_ft);
+
+		// chassis->moveDistance(3_ft);
+		// chassis->turnAngle(-90_deg);
+		// pneumatics.set_value(true);
+		// frontIntake.move(-127 * 2);
+		// pros::delay(300);
+		// chassis->setMaxVelocity(200);
+		// chassis->moveDistanceAsync(1.5_ft);
+		// pros::delay(1100);
+		// if (chassis->isSettled() != true)
+		// {
+		// 	chassis->stop();
+		// }
 
 		// pros::delay(500);
 
